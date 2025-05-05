@@ -1,0 +1,69 @@
+<div class="max-w-4xl mx-auto mt-8">
+  @if (loading) {
+    <div class="text-center p-4">
+      <p class="text-gray-600">Chargement des tâches...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      {{ error }}
+    </div>
+  }
+
+  @if (todos.length === 0 && !loading) {
+    <div class="text-center p-4">
+      <p class="text-gray-600">Aucune tâche pour le moment</p>
+    </div>
+  }
+
+  <div class="grid gap-4">
+    @for (todo of sortedTodos; track todo.id) {
+      <div class="bg-[#2C2C2C] p-4 rounded-full border-2" 
+           [ngClass]="{
+             'border-gray-700': todo.status === 'not_started',
+             'border-yellow-700': todo.status === 'in_progress',
+             'border-green-700': todo.status === 'done'
+           }">
+        <div class="flex items-center w-full">
+        <div class="flex items-center w-full justify-between">
+            <div class="flex items-center gap-2 relative group">
+                <input
+                    type="text"
+                    [(ngModel)]="todo.title"
+                    (blur)="updateTitle(todo)"
+                    class="text-xl font-semibold text-white bg-transparent h-full border-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-full p-4 cursor-pointer group-hover:bg-zinc-700/30 transition-all"
+                    title="Cliquez pour modifier"
+                >
+                <span class="text-gray-400 transition-opacity absolute right-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                </span>
+            </div>
+            <select 
+            [(ngModel)]="todo.status"
+            (change)="updateStatus(todo)"
+            class="p-4 text-sm rounded-full mr-2 cursor-pointer text-white"
+            [ngClass]="{
+                'bg-zinc-700': todo.status === 'not_started',
+                'bg-yellow-500': todo.status === 'in_progress',
+                'bg-green-500': todo.status === 'done'
+            }">
+                <option value="not_started">Non commencé</option>
+                <option value="in_progress">En cours</option>
+                <option value="done">Terminé</option>
+            </select>
+          </div>
+          <button 
+            (click)="deleteTodo(todo.id!)"
+            class="text-zinc-500 hover:text-zinc-700 p-4 rounded-full hover:bg-zinc-50 transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

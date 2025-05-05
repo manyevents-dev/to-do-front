@@ -1,0 +1,38 @@
+<div class="max-w-xl mx-auto mt-8 p-10 bg-[#2C2C2C] rounded-[50px]">
+    <form (ngSubmit)="todoForm.form.valid && onSubmit()" #todoForm="ngForm">
+      <div class="mb-4">
+        <label for="title" class="flex text-white text-sm font-bold mb-2">Titre</label>
+        <input 
+          type="text" 
+          id="title"
+          name="title"
+          placeholder="Entrez le titre de la tâche..."
+          [(ngModel)]="todo.title"
+          #titleInput="ngModel"
+          class="w-full px-3 py-2 border-2 border-white/70 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-zinc-600"
+          [ngClass]="{'border-red-500': titleInput.invalid && titleInput.dirty && titleInput.value?.length > 0}"
+          required
+          minlength="3">
+        @if (titleInput.invalid ) {
+          <div class="text-red-500 text-sm mt-1">
+            @if (titleInput.errors?.['minlength']) {
+              <p>Le titre doit contenir au moins 3 caractères</p>
+            }
+          </div>
+        }
+      </div>
+
+    @if (error) {
+      <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+        {{ error }}
+      </div>
+    }
+
+    <button 
+      type="submit"
+      [disabled]="todoForm.invalid"
+      class="w-full bg-white text-black py-2 px-4 rounded-full hover:bg-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+      Ajouter la tâche
+    </button>
+  </form>
+</div>
