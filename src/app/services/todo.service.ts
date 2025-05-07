@@ -12,6 +12,7 @@ export interface Todo {
   id?: number;
   title: string;
   status: TaskStatus;
+  created_at: Date;
 }
 
 @Injectable({

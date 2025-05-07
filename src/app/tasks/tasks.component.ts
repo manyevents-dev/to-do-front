@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TodoService, Todo, TaskStatus } from '../services/todo.service';
+import { TaskComponent } from '../task/task.component'; 
 
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TaskComponent],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css'
 })
@@ -14,25 +15,24 @@ export class TasksComponent implements OnInit {
   todos: Todo[] = [];
   loading = true;
   error = '';
-  TaskStatus = TaskStatus;
-  isEditing: number | null = null;
 
   constructor(private todoService: TodoService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadTodos();
   }
 
   get sortedTodos() {
     return [...this.todos].sort((a, b) => {
-      return (b.id || 0) - (a.id || 0);
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
   }
 
   loadTodos() {
+    this.loading = true;
     this.todoService.getTodos().subscribe({
-      next: (data) => {
-        this.todos = data;
+      next: (todos) => {
+        this.todos = todos;
         this.loading = false;
       },
       error: (err) => {
@@ -50,9 +50,21 @@ export class TasksComponent implements OnInit {
         this.loadTodos();
       },
       error: (err) => {
-        this.error = 'La tache a été terminer et est non modifiable';
+        this.error = 'Erreur lors de la mise à jour du statut';
         console.error('Erreur:', err);
+      }
+    });
+  }
+
+  updateTitle(todo: Todo) {
+    this.todoService.updateTodo(todo.id!, todo).subscribe({
+      next: () => {
+        this.error = '';
         this.loadTodos();
+      },
+      error: (err) => {
+        this.error = 'Erreur lors de la mise à jour du titre';
+        console.error('Erreur:', err);
       }
     });
   }
@@ -68,21 +80,5 @@ export class TasksComponent implements OnInit {
           console.error('Erreur:', err);
         }
       });
-  }
-
-  updateTitle(todo: Todo) {
-    if (todo.title.trim()) {
-      this.todoService.updateTodo(todo.id!, todo).subscribe({
-        next: () => {
-          this.error = '';
-          this.isEditing = null;
-        },
-        error: (err) => {
-          this.error = 'Erreur lors de la modification du titre';
-          console.error('Erreur:', err);
-          this.loadTodos(); // Recharger en cas d'erreur
-        }
-      });
-    }
   }
 }

@@ -15,22 +15,24 @@ export class FormComponent {
   
   todo: Todo = {
     title: '',
-    status: TaskStatus.NOT_STARTED
+    status: TaskStatus.NOT_STARTED,
+    created_at: new Date()
   };
   error = '';
-
+  ok = false;
   constructor(private todoService: TodoService) {}
 
   onSubmit() {
     if (this.todo.title.trim()) {
       this.todoService.createTodo(this.todo).subscribe({
         next: () => {
+          this.ok = true;
           this.todo = {
             title: '',
-            status: TaskStatus.NOT_STARTED
+            status: TaskStatus.NOT_STARTED,
+            created_at: new Date()
           };
           this.todoAdded.emit();
-          window.location.reload();
         },
         error: (err) => {
           this.error = 'Erreur lors de la création de la tâche';
